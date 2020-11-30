@@ -31,6 +31,10 @@ public class Employee {
 		return this.name;
 	}
 	
+	public String getRole() {
+		return this.role;
+	}
+	
 	//Mutators
 	//-----------------------
 	public void setId(Long id) {
