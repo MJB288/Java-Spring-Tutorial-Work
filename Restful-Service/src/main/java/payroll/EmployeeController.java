@@ -2,7 +2,9 @@ package payroll;
 
 import java.util.List;
 
-
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+
+//import org.springframework.hateoas.*;
 
 @RestController
 public class EmployeeController {
@@ -41,9 +45,22 @@ public class EmployeeController {
 	
 	// TC - Single Item
 	//So in other words - modifying/getting based off of single attributes or in this case the id
-	@GetMapping("/employees/{id}")
+	/*@GetMapping("/employees/{id}")
 	Employee one(@PathVariable Long id) {
 		return repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException(id));
+	}*/
+	
+	@GetMapping("/employees/{id}")
+	EntityModel<Employee> one(@PathVariable Long id){
+		
+		Employee employee = repository.findById(id)
+				.orElseThrow(() -> new EmployeeNotFoundException(id));
+		return EntityModel.of(employee,
+				//Ask HATEOAS to build a link to the EmployeController one method() as a self-link
+				linkTo(methodOn(EmployeeController.class).one(id)).withSelfRel(),
+				//Ask HATEOAS to build a link to the aggregate root all() and call it employees
+				linkTo(methodOn(EmployeeController.class).all()).withRel("employees"));
+		  
 	}
 	
 	
