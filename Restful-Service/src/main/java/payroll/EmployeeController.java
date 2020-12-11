@@ -93,9 +93,9 @@ public class EmployeeController {
 	
 	
 	@PutMapping("/employees/{id}")
-	Employee replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
+	ResponseEntity<?> replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
 		//Find an employee by an existing id and set new name and role
-		return repository.findById(id).map(
+		Employee updatedEmployee = repository.findById(id).map(
 				employee-> {
 					employee.setName(newEmployee.getName());
 					employee.setRole(newEmployee.getRole());
@@ -106,11 +106,22 @@ public class EmployeeController {
 			newEmployee.setId(id);
 			return repository.save(newEmployee);
 		});
+		
+		//The employee object from the save event is wrapped by the assembler into an EntityModel object
+		//using the getRequiredLink, retrieve the Link created by the EmployeeModelAssembler
+		EntityModel<Employee> entityModel = assembler.toModel(updatedEmployee);
+		
+		return ResponseEntity //
+				.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+				.body(entityModel);
+		//Use the static method created where we can plug in the resource's URI
 	}
 	
 	@DeleteMapping("/employees/{id}")
-	void deleteEmployee(@PathVariable Long id) {
+	ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
 	  repository.deleteById(id);
+	  
+	  return ResponseEntity.noContent().build();
 	}
 	
 }
