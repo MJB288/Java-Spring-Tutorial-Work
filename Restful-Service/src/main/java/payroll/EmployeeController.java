@@ -1,9 +1,12 @@
 package payroll;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,9 +24,13 @@ public class EmployeeController {
 	
 	private final EmployeeRepository repository;
 	
+	private final EmployeeModelAssembler assembler;
+	
+	
 	//Dependency injection
-	EmployeeController(EmployeeRepository repository){
+	EmployeeController(EmployeeRepository repository, EmployeeModelAssembler assembler){
 		this.repository = repository;
+		this.assembler = assembler;
 	}
 	
 	//TC = Tutorial Comment - or comment in the tutorial itself
@@ -33,8 +40,17 @@ public class EmployeeController {
 	
 	//Map the get request for employees
 	@GetMapping("/employees")
-	List<Employee> all(){
-		return repository.findAll();
+	CollectionModel<EntityModel<Employee>> all(){
+		/*List<EntityModel<Employee>> employees = repository.findAll().stream()
+			      .map(employee -> EntityModel.of(employee,
+			          linkTo(methodOn(EmployeeController.class).one(employee.getId())).withSelfRel(),
+			          linkTo(methodOn(EmployeeController.class).all()).withRel("employees")))
+			      .collect(Collectors.toList());*/
+		//Like the singular method - we can now delegate the employee conversion to the assembler
+		List<EntityModel<Employee>> employees = repository.findAll().stream().map(assembler::toModel).collect(Collectors.toList());
+		
+		return CollectionModel.of(employees,
+				linkTo(methodOn(EmployeeController.class).all()).withSelfRel());
 	}
 		
 	//Map the Post request for employees
@@ -55,11 +71,13 @@ public class EmployeeController {
 		
 		Employee employee = repository.findById(id)
 				.orElseThrow(() -> new EmployeeNotFoundException(id));
-		return EntityModel.of(employee,
+		/*return EntityModel.of(employee,
 				//Ask HATEOAS to build a link to the EmployeController one method() as a self-link
 				linkTo(methodOn(EmployeeController.class).one(id)).withSelfRel(),
 				//Ask HATEOAS to build a link to the aggregate root all() and call it employees
-				linkTo(methodOn(EmployeeController.class).all()).withRel("employees"));
+				linkTo(methodOn(EmployeeController.class).all()).withRel("employees"));*/
+		//Thanks to the assembler, the above code is no longer needed
+		return assembler.toModel(employee);
 		  
 	}
 	
