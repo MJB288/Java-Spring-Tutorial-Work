@@ -23,9 +23,10 @@ public class LoadDatabase {
 	@Bean
 	CommandLineRunner initDatabase(EmployeeRepository repository) {
 		return args -> {
-			log.info("Preloading " + repository.save(new Employee("Bilbo Baggins", "burglar")));
-			log.info("Preloading " + repository.save(new Employee("Frodo Baggins", "thief")));
-			log.info("Preloading " + repository.save(new Employee("Gandalf the Grey", "wizard")));
+			log.info("Preloading " + repository.save(new Employee("Bilbo", "Baggins", "burglar")));
+			log.info("Preloading " + repository.save(new Employee("Frodo", "Baggins", "thief")));
+			//Yes, I am aware that's a title, not a name.
+			log.info("Preloading " + repository.save(new Employee("Gandalf", "the Grey", "wizard")));
 			
 		};
 	}
