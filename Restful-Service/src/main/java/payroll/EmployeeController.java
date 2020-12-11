@@ -8,6 +8,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,8 +57,16 @@ public class EmployeeController {
 		
 	//Map the Post request for employees
 	@PostMapping("/employees")
-	Employee newEmployee(@RequestBody Employee newEmployee) {
-		return repository.save(newEmployee);
+	ResponseEntity<?> newEmployee(@RequestBody Employee newEmployee) {
+		//return repository.save(newEmployee);
+		//We continue to save the employee like before
+		EntityModel<Employee> entityModel = assembler.toModel(repository.save(newEmployee));
+		//However, we now respond to each request with an HTTP 201 Created
+		//This includes a location and we use the URI derived from the model's self-related link
+		//return the model based version of the saved object
+		return ResponseEntity //
+				.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())//
+				.body(entityModel);
 	}
 	
 	// TC - Single Item
