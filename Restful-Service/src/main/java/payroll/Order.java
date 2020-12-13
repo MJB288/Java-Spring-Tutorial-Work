@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Table(name = "CUSTOMER_ORDER")
 public class Order {
 	
-	private @ID @GeneratedValue Long id;
+	private @Id @GeneratedValue Long id;
 	
 	private String description;
 	private Status status;
@@ -34,7 +34,7 @@ public class Order {
 		return this.description;
 	}
 	
-	public String getStatus() {
+	public Status getStatus() {
 		return this.status;
 	}
 	
