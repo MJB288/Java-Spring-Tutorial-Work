@@ -21,12 +21,24 @@ public class LoadDatabase {
 	//This runner will request a copy of the EmployeeRepository that this just created
 	//Using it, it will create two entities and store them
 	@Bean
-	CommandLineRunner initDatabase(EmployeeRepository repository) {
+	CommandLineRunner initDatabase(EmployeeRepository employeeRepository, OrderRepository orderRepository) {
 		return args -> {
-			log.info("Preloading " + repository.save(new Employee("Bilbo", "Baggins", "burglar")));
-			log.info("Preloading " + repository.save(new Employee("Frodo", "Baggins", "thief")));
+			employeeRepository.save(new Employee("Bilbo", "Baggins", "burglar"));
+			employeeRepository.save(new Employee("Frodo", "Baggins", "thief"));
 			//Yes, I am aware that's a title, not a name.
-			log.info("Preloading " + repository.save(new Employee("Gandalf", "the Grey", "wizard")));
+			employeeRepository.save(new Employee("Gandalf", "the Grey", "wizard"));
+			//Now to actually log their creation
+			employeeRepository.findAll().forEach(employee -> log.info("Preloaded : " + employee));
+			
+			//Now to preload the orders in the same fashion
+			orderRepository.save(new Order("MacBook Pro", Status.COMPLETED));
+		    orderRepository.save(new Order("iPhone", Status.IN_PROGRESS));
+		    orderRepository.save(new Order("Samsung Galaxy S4", Status.CANCELLED));
+		    
+		    orderRepository.findAll().forEach(order -> log.info("Preloaded"));
+			
+			
+			
 			
 		};
 	}
