@@ -35,7 +35,7 @@ public class LoadDatabase {
 		    orderRepository.save(new Order("iPhone", Status.IN_PROGRESS));
 		    orderRepository.save(new Order("Samsung Galaxy S4", Status.CANCELLED));
 		    
-		    orderRepository.findAll().forEach(order -> log.info("Preloaded"));
+		    orderRepository.findAll().forEach(order -> log.info("Preloaded : " + order));
 			
 			
 			
