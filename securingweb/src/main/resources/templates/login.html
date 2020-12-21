@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	<head>
+		<title>Spring Security Example</title>
+	</head>
+	<body>
+		<!--A failed login will produce a /login?error link which will produce this message-->
+		<div th:if="${param.error}">
+			Invalid username and password.
+		</div>
+		<!--Similarly a logout will produce a /login?logout  link and dispplay this action-->
+		<div th:if="${param.logout}">
+			You have been logged out.
+		</div>
+		<!-- Spring security as configured will intercept the /login request authenticates the user-->
+		<form th:action="@{/login}" method="post">
+			<div><label> User Name : <input type="text" name="username"/></label></div>
+			<div><label> Password : <input type="password" name="password"/></label></div>
+			<div><input type="submit" value="Sign In"/></div>
+		</form>
+	</body>
+</html>
