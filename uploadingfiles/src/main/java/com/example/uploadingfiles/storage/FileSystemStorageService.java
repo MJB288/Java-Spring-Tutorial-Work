@@ -32,8 +32,11 @@ public class FileSystemStorageService implements StorageService{
 			if(file.isEmpty()) {
 				throw new StorageException("Failed to store empty file.");
 			}
-			Path destinationFile = this.rootLocation.resolve(Paths.get(
-					file.getOriginalFilename()).normalize().toAbsolutePath());
+			Path destinationFile = this.rootLocation.resolve(
+					Paths.get(file.getOriginalFilename()))
+					.normalize().toAbsolutePath();
+			/*System.out.println("DF Parent : " + destinationFile.getParent().toString());
+			System.out.println("rootLocation : " + this.rootLocation.toAbsolutePath().toString());*/
 			if(!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
 				throw new StorageException("Cannot store file outside current directory");
 			}
